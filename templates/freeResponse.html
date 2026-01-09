@@ -47,14 +47,6 @@
             background-color: #0056b3;
         }
 
-        .hint-box {
-            margin-top: 10px;
-            color: #666;
-            font-style: italic;
-            display: none;
-            /* Hidden by default */
-        }
-
         #result {
             margin-top: 20px;
             font-weight: bold;
@@ -87,33 +79,22 @@
         <button onclick="checkAnswer()">Check</button>
     </div>
 
-    <div style="margin-top: 10px;">
-        <small style="cursor: pointer; color: blue; text-decoration: underline;" onclick="toggleHint()">Need a
-            hint?</small>
-        <div id="hint-display" class="hint-box">
-            Hint: {{ q.hint }}
-        </div>
-    </div>
-
     <div id="result"></div>
 
     <script>
-        // Import valid answers from Python
-        // The 'tojson' filter is crucial here to safely pass the list to JS
-        const validAnswers = {{ q.valid_answers | tojson }};
+        // Pull the single answer string from Python
+        const correctAnswer = "{{ q.answer }}";
 
         function checkAnswer() {
             const inputField = document.getElementById('user-input');
             const resultDiv = document.getElementById('result');
 
-            // Normalize input: remove spaces, convert to lowercase
+            // Normalize user input (remove spaces, lower case)
             let userVal = inputField.value.trim().toLowerCase();
+            let targetVal = correctAnswer.trim().toLowerCase();
 
-            // Check if the user's input matches ANY of the valid answers
-            // We also normalize the valid answers just in case
-            const isCorrect = validAnswers.some(ans => ans.toLowerCase() === userVal);
-
-            if (isCorrect) {
+            // Direct string comparison
+            if (userVal === targetVal) {
                 resultDiv.innerText = "Correct!";
                 resultDiv.className = "correct";
             } else {
@@ -121,15 +102,6 @@
                 resultDiv.className = "incorrect";
             }
             resultDiv.style.display = "block";
-        }
-
-        function toggleHint() {
-            const hintDiv = document.getElementById('hint-display');
-            if (hintDiv.style.display === "none" || hintDiv.style.display === "") {
-                hintDiv.style.display = "block";
-            } else {
-                hintDiv.style.display = "none";
-            }
         }
     </script>
 
