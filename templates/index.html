@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LaTeX in Flask</title>
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+    <div style="text-align: center; margin-top: 50px;">
+        <h1>MathJax Rendering</h1>
+
+        <p>Here is the raw string from Python:</p>
+        <code>{{ formula }}</code>
+
+        <hr>
+
+        <p>Here is the rendered math:</p>
+        <div style="font-size: 1.5em;">
+            {{ formula }}
+        </div>
+    </div>
+</body>
+
+</html>
