@@ -23,6 +23,11 @@ On VSCode:
 ## Vercel Deployment Link
 project1-boiler-exams-a0qpeat5n-agadre11s-projects.vercel.app
 
+## Notes
+
+Although in the resources section of the assessment it says that BoilerExams has Fill in the blank questions available on your website I wasn't able to find any, so I did not implement functionality for those.
+I am not sure if BoilerExams has True/False Questions as their own separate so they will just be treated as multiple choice questions with two options.
+
 ## AI Use
 
 In this project, I used Gemini to help me figure out how to handle LaTex in my website and what libraries to use (I ended up using the MathJax Library)
