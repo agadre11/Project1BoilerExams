@@ -14,23 +14,133 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 
         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
             --bg-gradient-start: #f0f9ff;
             --bg-gradient-end: #ffffff;
             --card-bg: rgba(255, 255, 255, 0.95);
-            --text-color: #1e293b;
-            --text-secondary: #64748b;
+            --text-color: #0f172a;
+            --text-secondary: #475569;
             --border-color: #e2e8f0;
             --success-bg: #dcfce7;
             --success-text: #166534;
             --error-bg: #fee2e2;
             --error-text: #991b1b;
+            --stats-bg: #ffffff;
+            --component-bg: #ffffff;
         }
 
+        body.dark-mode {
+            --primary: #60a5fa;
+            --primary-hover: #93c5fd;
+            --primary-light: #1e3a8a;
+            --bg-gradient-start: #020617;
+            /* Slate 950 */
+            --bg-gradient-end: #0f172a;
+            /* Slate 900 */
+            --card-bg: rgba(15, 23, 42, 0.95);
+            --text-color: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --success-bg: #064e3b;
+            --success-text: #6ee7b7;
+            --error-bg: #7f1d1d;
+            --error-text: #fca5a5;
+            --stats-bg: #0f172a;
+            --component-bg: #1e293b;
+        }
+
+        body {
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .card {
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Stats Widget */
+        .stats-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--stats-bg);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            display: flex;
+            gap: 15px;
+            font-size: 0.9em;
+            color: var(--text-color);
+            transition: all 0.3s;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8em;
+            color: var(--text-secondary);
+        }
+
+        /* Input/Button Dark Mode Adjustments */
+        input[type="text"] {
+            background-color: var(--bg-gradient-start);
+            color: var(--text-color);
+        }
+
+        button.sample-btn {
+            background: transparent;
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        button.sample-btn:hover {
+            background: var(--primary-light);
+        }
+
+        /* Free Response Specific Styles */
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
@@ -56,10 +166,11 @@
             align-items: center;
             gap: 5px;
             padding: 10px 15px;
-            background: white;
+            background: var(--component-bg);
             border-radius: 8px;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
             transition: all 0.2s;
+            z-index: 100;
         }
 
         .back-btn:hover {
@@ -94,6 +205,8 @@
         }
 
         .question-box {
+            font-family: 'Lora', serif;
+            /* API: Academic Font for Question */
             font-size: 1.5em;
             line-height: 1.6;
             margin-bottom: 40px;
@@ -109,6 +222,8 @@
         }
 
         input[type="text"] {
+            font-family: 'Lora', serif;
+            /* API: Academic Font for Input/Answer */
             padding: 20px;
             font-size: 1.25em;
             border: 2px solid var(--border-color);
@@ -186,6 +301,7 @@
             border: 1px solid #fecaca;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 
 <body>
@@ -202,11 +318,125 @@
         <div class="input-group">
             <input type="text" id="user-input" placeholder="Type your answer here..." autocomplete="off">
             <button onclick="checkAnswer()">Submit Answer</button>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button onclick="showAnswer()"
+                    style="background: var(--text-secondary); flex: 1; font-size: 1em; padding: 15px;">Show
+                    Answer</button>
+                <button onclick="markCorrect()"
+                    style="background: var(--success-text); flex: 1; font-size: 1em; padding: 15px;">Mark as
+                    Correct</button>
+            </div>
         </div>
 
         <div id="result"></div>
     </div>
 
+    <script>
+        // --- Dark Mode ---
+        const themeToggleBtn = document.createElement('button');
+        themeToggleBtn.className = 'theme-toggle';
+        themeToggleBtn.innerHTML = '🌓'; // Default icon
+        themeToggleBtn.title = 'Toggle Dark Mode';
+        document.body.appendChild(themeToggleBtn);
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                document.body.classList.add('dark-mode');
+                themeToggleBtn.innerHTML = '☀️';
+            } else {
+                document.body.classList.remove('dark-mode');
+                themeToggleBtn.innerHTML = '🌙';
+            }
+        }
+
+        // Check saved preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        let isDarkMode = savedTheme === 'dark' || (!savedTheme && prefersDark);
+        applyTheme(isDarkMode);
+
+        themeToggleBtn.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+            applyTheme(isDarkMode);
+        });
+
+        // --- Stats ---
+        const statsWidget = document.createElement('div');
+        statsWidget.className = 'stats-widget';
+        document.body.appendChild(statsWidget);
+
+        function loadStats() {
+            const stats = JSON.parse(localStorage.getItem('examStats')) || {
+                total: 0,
+                correct: 0,
+                streak: 0
+            };
+            return stats;
+        }
+
+        function saveStats(stats) {
+            localStorage.setItem('examStats', JSON.stringify(stats));
+            renderStats();
+        }
+
+        function renderStats() {
+            const stats = loadStats();
+            const accuracy = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+
+            statsWidget.innerHTML = `
+        <div class="stat-item">
+            <span class="stat-value">${stats.total}</span>
+            <span class="stat-label">Done</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">${accuracy}%</span>
+            <span class="stat-label">Acc</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value">🔥 ${stats.streak}</span>
+            <span class="stat-label">Streak</span>
+        </div>
+    `;
+        }
+
+        // Initial Render
+        renderStats();
+
+        // Exposed function to update stats
+        window.updateStats = function (isCorrect) {
+            const stats = loadStats();
+            stats.total++;
+            if (isCorrect) {
+                stats.correct++;
+                stats.streak++;
+                triggerConfetti();
+            } else {
+                stats.streak = 0;
+            }
+            saveStats(stats);
+        };
+
+        // --- Confetti ---
+        function triggerConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        // --- Shortcuts ---
+        document.addEventListener('keydown', (e) => {
+            // Esc to go Home
+            if (e.key === 'Escape') {
+                window.location.href = '/';
+            }
+        });
+        // ... existing code ...
+    </script>
     <script>
         const correctAnswer = {{ q.answer | tojson }};
         const inputField = document.getElementById("user-input");
@@ -230,13 +460,32 @@
             if (userVal === targetVal) {
                 resultDiv.innerText = "Correct! Well done.";
                 resultDiv.classList.add("correct");
+                window.updateStats(true); // Track stats
             } else {
                 resultDiv.innerText = "Incorrect. Please try again.";
                 resultDiv.classList.add("incorrect");
+                window.updateStats(false); // Track stats
             }
             resultDiv.style.display = "block";
         }
+
+        function showAnswer() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerText = "Correct Answer: " + correctAnswer;
+            resultDiv.className = "incorrect"; // Use incorrect style (red/warning) for revealed answer
+            resultDiv.style.display = "block";
+            // Don't update stats for showing answer
+        }
+
+        function markCorrect() {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerText = "Marked as Correct! Well done.";
+            resultDiv.className = "correct";
+            resultDiv.style.display = "block";
+            window.updateStats(true); // Manual credit
+        }
     </script>
 </body>
+
 
 </html>
