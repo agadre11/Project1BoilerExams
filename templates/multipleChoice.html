@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Math Quiz</title>
 
     <script>
@@ -13,110 +14,240 @@
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --bg-gradient-start: #f0f9ff;
+            --bg-gradient-end: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --success-bg: #dcfce7;
+            --success-text: #166534;
+            --error-bg: #fee2e2;
+            --error-text: #991b1b;
+        }
+
         body {
-            font-family: sans-serif;
-            padding: 20px;
-            max-width: 600px;
-            margin: auto;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 60px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 1600px;
+            /* Spans almost whole width on standard screens */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .question-box {
-            margin-bottom: 20px;
-            font-size: 1.2em;
+            font-size: 1.5em;
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-weight: 50;
+            color: var(--text-color);
+            white-space: pre-wrap;
         }
 
-        /* Style the labels to look like clickable blocks */
+        /* Option Cards Styling */
         .option-label {
-            display: block;
-            padding: 10px 15px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            padding: 20px 25px;
+            margin-bottom: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: white;
+            font-size: 1.1em;
         }
 
         .option-label:hover {
-            background-color: #f0f0f0;
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
         }
 
-        /* Hide the actual radio circle if you want, or keep it */
-        input[type="radio"] {
-            margin-right: 10px;
+        /* Hide default radio */
+        .option-label input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            margin-right: 20px;
+            position: relative;
+            transition: all 0.2s;
+            flex-shrink: 0;
         }
 
-        /* Feedback styles */
+        .option-label input[type="radio"]:checked {
+            border-color: var(--primary);
+            background-color: var(--primary);
+        }
+
+        .option-label input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        /* Highlight the label when the radio inside is checked */
+        .option-label:has(input:checked) {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+
+        button {
+            margin-top: 30px;
+            width: 100%;
+            padding: 20px;
+            font-size: 1.25em;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
+            filter: brightness(1.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
         #result {
-            margin-top: 20px;
-            font-weight: bold;
-            padding: 10px;
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
             display: none;
+            font-size: 1.2em;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .correct {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            border: 1px solid #bbf7d0;
         }
 
         .incorrect {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            border: 1px solid #fecaca;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="question-box">
-        {{ q.text }}
+    <div class="card">
+        <div class="question-box">
+            {{ q.text }}
+        </div>
+
+        <form id="quiz-form">
+            {% for option in q.options %}
+            <label class="option-label">
+                <input type="radio" name="answer" value="{{ loop.index0 }}">
+                <span>{{ option }}</span>
+            </label>
+            {% endfor %}
+
+            <button type="button" onclick="checkAnswer()">Submit Answer</button>
+        </form>
+
+        <div id="result"></div>
     </div>
 
-    <form id="quiz-form">
-        {% for option in q.options %}
-        <label class="option-label">
-            <input type="radio" name="answer" value="{{ loop.index0 }}">
-            {{ option }}
-        </label>
-        {% endfor %}
-
-        <br>
-        <button type="button" onclick="checkAnswer()">Submit Answer</button>
-    </form>
-
-    <div id="result"></div>
-
     <script>
-        // Pass the correct index from Python to JS
         const correctIndex = {{ q.correct_index }};
 
         function checkAnswer() {
             const form = document.getElementById('quiz-form');
             const resultDiv = document.getElementById('result');
-
-            // Get selected value
             const selected = form.querySelector('input[name="answer"]:checked');
+
+            resultDiv.className = ""; // Reset classes
+            resultDiv.style.display = "none";
 
             if (!selected) {
                 alert("Please select an option!");
                 return;
             }
 
-            // Compare values
-            // Note: selected.value is a string, so we convert to int
             if (parseInt(selected.value) === correctIndex) {
                 resultDiv.innerText = "Correct! Great work.";
-                resultDiv.className = "correct";
+                resultDiv.classList.add("correct");
             } else {
                 resultDiv.innerText = "Incorrect. Try again.";
-                resultDiv.className = "incorrect";
+                resultDiv.classList.add("incorrect");
             }
-
             resultDiv.style.display = "block";
         }
     </script>
-
 </body>
 
 </html>
