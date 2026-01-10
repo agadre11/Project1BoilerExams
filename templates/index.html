@@ -3,32 +3,170 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>LaTeX in Flask</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BoilerExams Prep</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    <script>
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-gradient-start: #f0f9ff;
+            --bg-gradient-end: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --error-bg: #fee2e2;
+            --error-text: #991b1b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 60px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            text-align: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
             }
-        };
-    </script>
 
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary);
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+            white-space: nowrap;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(37, 99, 235, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .sample-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 30px;
+        }
+
+        .sample-btn {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: none;
+        }
+
+        .sample-btn:hover {
+            background: var(--primary-light);
+            box-shadow: none;
+        }
+
+        .flash-message {
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #fecaca;
+        }
+    </style>
 </head>
 
 <body>
-    <div style="text-align: center; margin-top: 50px;">
-        <h1>MathJax Rendering</h1>
+    <div class="card">
+        <h1>BoilerExams Prep</h1>
+        <p>Enter a Question ID or try a sample.</p>
 
-        <p>Here is the raw string from Python:</p>
-        <code>{{ formula }}</code>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="flash-message">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
 
-        <hr>
+        <form action="/question" method="get" class="input-group">
+            <input type="text" name="id" placeholder="e.g., 1f86e0a7..." required>
+            <button type="submit">Load Question</button>
+        </form>
 
-        <p>Here is the rendered math:</p>
-        <div style="font-size: 1.5em;">
-            {{ formula }}
+        <div class="sample-section">
+            <p style="margin-bottom: 15px; font-size: 0.9em;">Sample Questions</p>
+            <a href="/question?id=1f86e0a7-0736-4f45-85d7-b0e4cdf5f969">
+                <button class="sample-btn" style="width: 100%;">Sample Multiple Choice</button>
+            </a>
+            <a href="/question?id=425ef734-29f3-4b4f-9f1e-5c3617849e47">
+                <button class="sample-btn" style="width: 100%;">Sample Free Response</button>
+            </a>
         </div>
     </div>
 </body>

@@ -42,6 +42,30 @@
             margin: 0;
             padding: 40px;
             box-sizing: border-box;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            color: var(--primary);
+            transform: translateX(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
         }
 
         .card {
@@ -165,6 +189,10 @@
 </head>
 
 <body>
+
+    <a href="/" class="back-btn">
+        <span>←</span> Back to Home
+    </a>
 
     <div class="card">
         <div class="question-box">
